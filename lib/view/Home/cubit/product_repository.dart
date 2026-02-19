@@ -84,6 +84,7 @@ class ProductRepository {
         'title': product.title,
         'price': product.price,
         'thumbnail': product.thumbnail,
+        'quantity': product.quantity+1,
       },
     );
   }

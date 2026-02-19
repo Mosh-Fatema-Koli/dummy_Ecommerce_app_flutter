@@ -26,10 +26,11 @@ class TableStructure {
   Future<void> createCartTable(Database db) async {
     await db.execute('''
     CREATE TABLE IF NOT EXISTS Cart (
-      id INTEGER PRIMARY KEY,
-      title TEXT NOT NULL,
-      price REAL NOT NULL,
-      thumbnail TEXT NOT NULL
+      id INTEGER,
+      title TEXT ,
+      price REAL ,
+      thumbnail TEXT ,
+      quantity INTEGER 
     )
   ''');
   }

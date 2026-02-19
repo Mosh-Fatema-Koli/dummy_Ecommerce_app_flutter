@@ -37,18 +37,20 @@ class CartRepository {
   Future<void> substraction(ProductModel product) async {
     if(product.quantity==1){
       removeFromCart(product);
+    }else{
+      await _localDataController.addOrUpdate(
+        tableName: 'Cart',
+        primaryKey: 'id',
+        jsonMap: {
+          'id': product.id,
+          'title': product.title,
+          'price': product.price,
+          'thumbnail': product.thumbnail,
+          'quantity': product.quantity-1,
+        },
+      );
     }
-    await _localDataController.addOrUpdate(
-      tableName: 'Cart',
-      primaryKey: 'id',
-      jsonMap: {
-        'id': product.id,
-        'title': product.title,
-        'price': product.price,
-        'thumbnail': product.thumbnail,
-        'quantity': product.quantity-1,
-      },
-    );
+
   }
 
   Future<void> removeFromCart(ProductModel product) async {

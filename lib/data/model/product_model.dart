@@ -10,7 +10,7 @@ class ProductModel {
     required this.title,
     required this.price,
     required this.thumbnail,
-    this.quantity = 1, // default 1
+    this.quantity = 0, // default 1
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
