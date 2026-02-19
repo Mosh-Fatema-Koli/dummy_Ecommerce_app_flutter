@@ -9,42 +9,59 @@ class ProductRepository {
   final _miscController = MiscController();
 
   //region fetchData
-  Future<void> fetchProducts({
-    required Function(bool isSuccess, String message, List<ProductModel> dataList) onComplete,
+  Future<void> fetchData({
+    required Function(
+        bool isSuccess,
+        String message,
+        List<ProductModel> dataList,
+        ) onComplete,
   }) async {
     List<ProductModel> list = [];
 
     try {
+      /// 1️⃣ Check Internet
       final internetStatus = await _miscController.checkInternet();
+
       if (internetStatus.contains('ignore')) {
-        onComplete(false, "Internet Error!\nYou are offline, Please check your internet connection.", list);
+        onComplete(
+          false,
+          "Internet Error!\nYou are offline, Please check your internet connection.",
+          list,
+        );
         return;
       }
 
+      /// 2️⃣ API Call
       final apiResponse = await api.fetchListData(endpoint: "/products");
-      final decodedResponse = jsonDecode(apiResponse);
 
-      final bool success = decodedResponse['Success'] ?? false;
-      final String message = decodedResponse['Message'] ?? 'No message';
+      final decodedData = jsonDecode(apiResponse);
+
+      final bool success = decodedData['Success'] ?? false;
+      final String message = decodedData['Message'] ?? "Unknown Error";
 
       if (!success) {
-        onComplete(false, 'Download Error!\n$message', list);
+        onComplete(false, "Download Error!\n$message", list);
         return;
       }
 
-      final packetList = decodedResponse['PacketList'];
-      if (packetList == null) {
-        onComplete(false, 'Download Error!\nAPI response packet is null', list);
+      /// 3️⃣ Parse Product List
+      final packetList = decodedData['PacketList']?['products'];
+
+      if (packetList == null || packetList.isEmpty) {
+        onComplete(false, "Download Error!\nAPI response packet is Null", list);
         return;
       }
 
-      for (var item in packetList) {
-        list.add(ProductModel.fromJson(item));
-      }
+      list = (packetList as List)
+          .map((item) => ProductModel.fromJson(item))
+          .toList();
 
-      onComplete(true, 'Data downloaded successfully', list);
+      onComplete(true, "Data downloaded successfully", list);
     } catch (e) {
-      onComplete(false, 'Download Error!\n${e.toString()}', list);
+      onComplete(false, "Download Error!\n${e.toString()}", list);
     }
   }
+
+  //endregion
+
 }

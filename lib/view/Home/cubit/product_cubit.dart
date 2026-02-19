@@ -1,30 +1,19 @@
-
+import 'package:boilerplate_of_cubit/library.dart';
 import 'package:boilerplate_of_cubit/view/Home/cubit/product_repository.dart';
 import 'package:boilerplate_of_cubit/view/Home/cubit/product_state.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/MiscController.dart';
-import '../../../data/data_sources/api_core/api.dart';
+import 'package:flutter/material.dart';
 
+import '../../../data/model/product_model.dart';
 
 class ProductCubit extends Cubit<ProductState> {
-  ProductCubit() : super( ProductInitial());
+  ProductCubit() : super(ProductInitial());
 
   final _repository = ProductRepository();
 
-  API api = API();
-  final _miscController = MiscController();
-
-  void loadData({BuildContext? context}) {
-    if (context != null) {
-      _miscController.showProgressDialog(context: context);
-    }
-
-    _repository.fetchProducts(
+  void loadData() {
+    _repository.fetchData(
       onComplete: (isSuccess, message, dataList) {
-        if (context != null) {
-          Navigator.pop(context);
-        }
+        if (isClosed) return;
 
         emit(ProductLoadedState(
           success: isSuccess,
@@ -35,4 +24,19 @@ class ProductCubit extends Cubit<ProductState> {
     );
   }
 
+
+  void addToCart(ProductModel product) {
+    if (state is ProductLoadedState) {
+      final currentState = state as ProductLoadedState;
+
+      final updatedCart = List<ProductModel>.from(currentState.cartItems)
+        ..add(product);
+
+      emit(ProductLoadedState(
+        success: true,
+        listOfData: currentState.listOfData,
+        cartItems: updatedCart,
+      ));
+    }
+  }
 }

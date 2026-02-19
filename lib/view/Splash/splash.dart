@@ -1,31 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import '../Home/home_page.dart';
 
-
-class SplashPage extends StatefulWidget {
+class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 
-  @override
-  State<SplashPage> createState() => _SplashPageState();
-}
-
-class _SplashPageState extends State<SplashPage> {
-  @override
-  void initState() {
-    super.initState();
-    // Navigate to HomePage after 3 seconds
+  void _navigate(BuildContext context) {
     Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          CupertinoPageRoute(builder: (_) =>  HomePage()),
-        );
-      }
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(builder: (_) => const HomePage()),
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Run after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigate(context);
+    });
+
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -37,13 +31,12 @@ class _SplashPageState extends State<SplashPage> {
           end: Alignment.bottomCenter,
         ),
       ),
-      child: SafeArea(
+      child: const SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Spacer(),
 
-            // Logo
             Icon(
               CupertinoIcons.sparkles,
               size: 90,
@@ -52,7 +45,6 @@ class _SplashPageState extends State<SplashPage> {
 
             SizedBox(height: 20),
 
-            // App Name
             Text(
               "Your App",
               style: TextStyle(
@@ -64,7 +56,6 @@ class _SplashPageState extends State<SplashPage> {
 
             SizedBox(height: 8),
 
-            // Subtitle
             Text(
               "Smart. Simple. Fast.",
               style: TextStyle(
@@ -75,7 +66,6 @@ class _SplashPageState extends State<SplashPage> {
 
             Spacer(),
 
-            // Loader
             CupertinoActivityIndicator(
               radius: 14,
               color: CupertinoColors.white,
