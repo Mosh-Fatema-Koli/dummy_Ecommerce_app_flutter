@@ -1,3 +1,4 @@
+import 'package:boilerplate_of_cubit/view/Home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubit/cart_cubit.dart';
@@ -20,7 +21,7 @@ class CartPage extends StatelessWidget {
               // Navigate to CartPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const CartPage()),
+                MaterialPageRoute(builder: (_) => const HomePage()),
               );
             }, icon: Icon(Icons.arrow_back_ios_new)),
             title: const Text('My Cart'),

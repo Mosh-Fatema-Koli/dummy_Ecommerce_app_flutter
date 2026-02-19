@@ -19,6 +19,7 @@ class HomePage extends StatelessWidget {
         create: (_) => ProductCubit()..loadData(),
         child: Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             title: const Text('Products'),
             actions: [
               BlocBuilder<ProductCubit, ProductState>(
