@@ -23,22 +23,17 @@ class TableStructure {
   ''');
   }
 
-  Future<void> createLeaveTable(Database db) async {
+  Future<void> createCartTable(Database db) async {
     await db.execute('''
-    CREATE TABLE IF NOT EXISTS Leave (
-      Id INTEGER PRIMARY KEY,
-      Employee INTEGER,
-      LeaveTypes TEXT,
-      StartDate TEXT,
-      EndDate TEXT,
-      TotalDays INTEGER,
-      Reason TEXT,
-      Status TEXT,
-      Image TEXT,
-      CreatedAt TEXT
+    CREATE TABLE IF NOT EXISTS Cart (
+      id INTEGER PRIMARY KEY,
+      title TEXT NOT NULL,
+      price REAL NOT NULL,
+      thumbnail TEXT NOT NULL
     )
   ''');
   }
+
 
 
   createOfflineLeaveQueueTable(Database db) async {

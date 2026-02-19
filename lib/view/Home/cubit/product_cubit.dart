@@ -12,31 +12,39 @@ class ProductCubit extends Cubit<ProductState> {
 
   void loadData() {
     _repository.fetchData(
-      onComplete: (isSuccess, message, dataList) {
+      onComplete: (isSuccess, message, dataList,cartList) {
         if (isClosed) return;
 
         emit(ProductLoadedState(
           success: isSuccess,
           message: message,
           listOfData: dataList,
+          cartItems: cartList
         ));
       },
     );
   }
 
 
-  void addToCart(ProductModel product) {
-    if (state is ProductLoadedState) {
-      final currentState = state as ProductLoadedState;
+  /// Add product to cart (DB + state)
+  Future<void> addToCart(ProductModel product) async {
+    await _repository.addToCart(product);
 
-      final updatedCart = List<ProductModel>.from(currentState.cartItems)
-        ..add(product);
+    if (state is ProductLoadedState) {
+      final current = state as ProductLoadedState;
+      final updatedCart = List<ProductModel>.from(current.cartItems)..add(product);
 
       emit(ProductLoadedState(
-        success: true,
-        listOfData: currentState.listOfData,
+        success: current.success,
+        message: current.message,
+        listOfData: current.listOfData,
         cartItems: updatedCart,
       ));
     }
   }
+
+
+
+
+
 }

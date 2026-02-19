@@ -37,5 +37,18 @@ class DataController {
     return count;
   }
 
+  Future<List<T>> getAllData<T>({
+    required String tableName,
+    required T Function(Map<String, dynamic>) fromJson,
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
+    return await _repository.getAllData<T>(
+      tableName: tableName,
+      fromJson: fromJson,
+      where: where,
+      whereArgs: whereArgs,
+    );
+  }
 }
 

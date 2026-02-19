@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../Cart/cart_page.dart';
 import 'cubit/product_cubit.dart';
 import 'cubit/product_state.dart';
 
@@ -27,7 +28,14 @@ class HomePage extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.shopping_cart),
-                      onPressed: () {},
+                        onPressed: () {
+                          // Navigate to CartPage
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const CartPage()),
+                          );
+
+                      },
                     ),
                     if (count > 0)
                       Positioned(
@@ -74,10 +82,8 @@ class HomePage extends StatelessWidget {
               if (products.isEmpty) {
                 return const Center(child: Text("No products available"));
               }
-
               // Responsive columns based on screen width
               final crossAxisCount = (MediaQuery.of(context).size.width / 200).floor();
-
               return RefreshIndicator(
                 onRefresh: () async => context.read<ProductCubit>().loadData(),
                 child: GridView.builder(
@@ -89,53 +95,79 @@ class HomePage extends StatelessWidget {
                     crossAxisSpacing: 8,
                   ),
                   itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    final product = products[index];
-                    return Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-                              child: Image.network(
-                                product.thumbnail,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                const Center(child: Icon(Icons.error)),
-                                loadingBuilder: (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return const Center(child: CircularProgressIndicator());
-                                },
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      return Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                                child: Image.network(
+                                  product.thumbnail,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                  const Center(child: Icon(Icons.error)),
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(child: CircularProgressIndicator());
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              product.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                product.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontWeight: FontWeight.w600),
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Text(
-                              '\$${product.price}',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, color: Colors.green),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                '\$${product.price}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, color: Colors.green),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                        ],
-                      ),
-                    );
-                  },
+                            const SizedBox(height: 4),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  // Add product to cart
+                                  context.read<ProductCubit>().addToCart(product);
+
+                                  // Optional: show feedback
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('${product.title} added to cart'),
+                                      duration: const Duration(seconds: 1),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.add_shopping_cart),
+                                label: const Text('Add to Cart'),
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: const Size.fromHeight(36),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                        ),
+                      );
+                    }
+
                 ),
               );
             }

@@ -23,9 +23,9 @@ class LocalDBRepository {
 
   _createDB(Database db, int version) async {
     TableStructure tableStructure = TableStructure();
-    tableStructure.createUserInfoTable(db);
-    tableStructure.createLeaveTable(db);
+    tableStructure.createCartTable(db);
     // tableStructure.createStuffListTable(db);
+    //tableStructure.createUserInfoTable(db);
 
   }
 
