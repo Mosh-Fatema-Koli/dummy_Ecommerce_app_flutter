@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import '../Home/home_page.dart';
+import '../Home/page/home_page.dart';
+
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});

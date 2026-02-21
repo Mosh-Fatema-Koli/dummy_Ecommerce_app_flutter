@@ -1,10 +1,9 @@
-// lib/presentation/pages/home_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../Cart/cart_page.dart';
-import 'cubit/product_cubit.dart';
-import 'cubit/product_state.dart';
+import '../../Cart/page/cart_page.dart';
+import '../cubit/product_cubit.dart';
+import '../cubit/product_state.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
