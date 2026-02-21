@@ -73,6 +73,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
+
   /// Add product to cart (DB + state)
   Future<void> addToCart(ProductModel product) async {
     if (state is! ProductLoadedState) return;
@@ -81,12 +82,18 @@ class ProductCubit extends Cubit<ProductState> {
 
     // 1️⃣ Update DB
     await _repository.addToCart(product);
-    // 2️⃣ Reload cart from DB (single source of truth)
-    loadData();
 
+    // 2️⃣ Update state only (do NOT fetch from API)
+    // Copy existing products but update cartItems
+    final updatedCart = await _repository.getCartItems(); // create this in repo
+
+    emit(ProductLoadedState(
+      success: true,
+      message: current.message,
+      listOfData: current.listOfData, // keep same products
+      cartItems: updatedCart, // updated cart only
+    ));
   }
-
-
-
-
 }
+
+

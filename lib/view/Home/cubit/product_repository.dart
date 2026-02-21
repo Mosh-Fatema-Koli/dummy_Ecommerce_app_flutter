@@ -106,6 +106,12 @@ class ProductRepository {
   }
 //endregion
 
+  Future<List<ProductModel>> getCartItems() async {
+    return await _localDataController.getAllData<ProductModel>(
+      tableName: 'Cart',
+      fromJson: (json) => ProductModel.fromJson(json),
+    );
+  }
   }
 
 
