@@ -74,20 +74,35 @@ class ProductRepository {
 
   //endregion
 
-  /// Cart DB operations
+
   Future<void> addToCart(ProductModel product) async {
-    await _localDataController.addOrUpdate(
+    final existingProduct =
+    await _localDataController.getSingleData<ProductModel>(
       tableName: 'Cart',
-      primaryKey: 'id',
-      jsonMap: {
-        'id': product.id,
-        'title': product.title,
-        'price': product.price,
-        'thumbnail': product.thumbnail,
-        'quantity': product.quantity+1,
-      },
+      fromJson: (json) => ProductModel.fromJson(json),
+      where: 'id = ?',
+      whereArgs: [product.id],
     );
+
+    if (existingProduct != null) {
+      final updatedProduct = existingProduct.copyWith(
+        quantity: existingProduct.quantity + 1,
+      );
+
+      await _localDataController.update(
+        tableName: 'Cart',
+        primaryKey: 'id',
+        jsonMap: updatedProduct.toJson(),
+      );
+    } else {
+      await _localDataController.add(
+        tableName: 'Cart',
+        jsonMap: product.copyWith(quantity: 1).toJson(),
+      );
+    }
   }
 
 
-}
+  }
+
+

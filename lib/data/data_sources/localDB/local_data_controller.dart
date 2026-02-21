@@ -2,7 +2,7 @@
 import 'Repo_controller.dart';
 
 
-class DataController {
+class  DataController {
 
   final _repository = LocalDBRepository();
 
@@ -49,6 +49,25 @@ class DataController {
       where: where,
       whereArgs: whereArgs,
     );
+  }
+
+  Future<T?> getSingleData<T>({
+    required String tableName,
+    required T Function(Map<String, dynamic>) fromJson,
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
+    final list = await _repository.getAllData<T>(
+      tableName: tableName,
+      fromJson: fromJson,
+      where: where,
+      whereArgs: whereArgs,
+    );
+
+    if (list.isNotEmpty) {
+      return list.first;
+    }
+    return null;
   }
 }
 
