@@ -10,21 +10,68 @@ class ProductCubit extends Cubit<ProductState> {
 
   final _repository = ProductRepository();
 
-  void loadData() {
-    _repository.fetchData(
-      onComplete: (isSuccess, message, dataList,cartList) {
+  int _limit = 10;
+  int _skip = 0;
+  bool _hasMore = true;
+
+  /// Load initial data or refresh
+  void loadData({bool isLoadMore = false}) {
+    if (!isLoadMore) {
+      _skip = 0;
+      _hasMore = true;
+    } else if (!_hasMore || state is! ProductLoadedState) {
+      // No more data to load
+      return;
+    } else {
+      // Show loading more
+      emit(ProductLoadedState(
+        success: true,
+        listOfData: (state as ProductLoadedState).listOfData,
+        cartItems: (state as ProductLoadedState).cartItems,
+        isLoadingMore: true,
+      ));
+    }
+
+    _repository.fetchProducts(
+      limit: _limit,
+      skip: _skip,
+      onComplete: (bool isSuccess, String message, List<ProductModel> newList, List<ProductModel> cartList) {
         if (isClosed) return;
 
+        if (!isSuccess && !isLoadMore) {
+          emit(ProductErrorState(message));
+          return;
+        }
+
+        List<ProductModel> updatedList = [];
+
+        if (state is ProductLoadedState && isLoadMore) {
+          final currentState = state as ProductLoadedState;
+          updatedList = [...currentState.listOfData, ...newList];
+        } else {
+          updatedList = newList;
+        }
+
+        _skip = updatedList.length;
+        _hasMore = newList.length == _limit;
+
         emit(ProductLoadedState(
-          success: isSuccess,
+          success: true,
           message: message,
-          listOfData: dataList,
-          cartItems: cartList
+          listOfData: updatedList,
+          cartItems: cartList,
+          isLoadingMore: false,
         ));
       },
     );
   }
 
+  /// Load more data (lazy loading)
+  void loadMore() {
+    if (_hasMore && state is ProductLoadedState) {
+      loadData(isLoadMore: true);
+    }
+  }
 
   /// Add product to cart (DB + state)
   Future<void> addToCart(ProductModel product) async {

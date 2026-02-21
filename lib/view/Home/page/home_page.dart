@@ -69,37 +69,51 @@ class HomePage extends StatelessWidget {
           ),
           body: BlocBuilder<ProductCubit, ProductState>(
             builder: (context, state) {
-              // Loading indicator while initial state
+              final productCubit = context.read<ProductCubit>();
+
               if (state is ProductInitial) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              // Error state
               if (state is ProductErrorState) {
                 return Center(child: Text(state.message));
               }
 
-              // Loaded state
               if (state is ProductLoadedState) {
                 final products = state.listOfData;
 
                 if (products.isEmpty) {
                   return const Center(child: Text("No products available"));
                 }
-                // Responsive columns based on screen width
+
                 final crossAxisCount = (MediaQuery.of(context).size.width / 200).floor();
+
                 return RefreshIndicator(
-                  onRefresh: () async => context.read<ProductCubit>().loadData(),
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(8),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount > 1 ? crossAxisCount : 2,
-                      childAspectRatio: 0.7,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                    ),
-                    itemCount: products.length,
+                  onRefresh: () async => productCubit.loadData(),
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (scrollInfo) {
+                      // Lazy load when near bottom
+                      if (scrollInfo.metrics.pixels >=
+                          scrollInfo.metrics.maxScrollExtent - 200 &&
+                          !state.isLoadingMore) {
+                        productCubit.loadMore();
+                      }
+                      return false;
+                    },
+                    child: GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount > 1 ? crossAxisCount : 2,
+                        childAspectRatio: 0.7,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                      ),
+                      itemCount: state.isLoadingMore ? products.length + 1 : products.length,
                       itemBuilder: (context, index) {
+                        if (index >= products.length) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
                         final product = products[index];
                         return Card(
                           elevation: 2,
@@ -111,7 +125,8 @@ class HomePage extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                                  borderRadius:
+                                  const BorderRadius.vertical(top: Radius.circular(8)),
                                   child: Image.network(
                                     product.thumbnail,
                                     fit: BoxFit.cover,
@@ -119,7 +134,8 @@ class HomePage extends StatelessWidget {
                                     const Center(child: Icon(Icons.error)),
                                     loadingBuilder: (context, child, loadingProgress) {
                                       if (loadingProgress == null) return child;
-                                      return const Center(child: CircularProgressIndicator());
+                                      return const Center(
+                                          child: CircularProgressIndicator());
                                     },
                                   ),
                                 ),
@@ -146,10 +162,8 @@ class HomePage extends StatelessWidget {
                                 padding: const EdgeInsets.symmetric(horizontal: 8),
                                 child: ElevatedButton.icon(
                                   onPressed: () {
-                                    // Add product to cart
-                                    context.read<ProductCubit>().addToCart(product);
+                                    productCubit.addToCart(product);
 
-                                    // Optional: show feedback
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text('${product.title} added to cart'),
@@ -170,13 +184,12 @@ class HomePage extends StatelessWidget {
                             ],
                           ),
                         );
-                      }
-
+                      },
+                    ),
                   ),
                 );
               }
 
-              // Fallback empty state
               return const Center(child: Text("No products available"));
             },
           ),

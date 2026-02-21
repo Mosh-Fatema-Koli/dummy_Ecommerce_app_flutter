@@ -12,7 +12,9 @@ class ProductRepository {
   final _miscController = MiscController();
 
   //region fetchData
-  Future<void> fetchData({
+  Future<void> fetchProducts({
+    required int limit,
+    required int skip,
     required Function(
         bool isSuccess,
         String message,
@@ -36,8 +38,9 @@ class ProductRepository {
         return;
       }
 
-      /// 2️⃣ API Call
-      final apiResponse = await api.fetchListData(endpoint: "/products");
+      // 2️⃣ API Call with limit & skip for pagination
+      final apiResponse =
+      await api.fetchListData(endpoint: "/products?limit=$limit&skip=$skip");
 
       final decodedData = jsonDecode(apiResponse);
 
@@ -74,7 +77,7 @@ class ProductRepository {
 
   //endregion
 
-
+  //region addToCart
   Future<void> addToCart(ProductModel product) async {
     final existingProduct =
     await _localDataController.getSingleData<ProductModel>(
@@ -101,7 +104,7 @@ class ProductRepository {
       );
     }
   }
-
+//endregion
 
   }
 
