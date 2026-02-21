@@ -35,20 +35,4 @@ class TableStructure {
   ''');
   }
 
-
-
-  createOfflineLeaveQueueTable(Database db) async {
-    await db.execute('''
-    CREATE TABLE IF NOT EXISTS LeaveOfflineQueue (
-      Id INTEGER PRIMARY KEY AUTOINCREMENT,
-      LeaveTypes TEXT,
-      StartDate TEXT,
-      EndDate TEXT,
-      Reason TEXT,
-      ImagePath TEXT
-    )
-  ''');
-  }
-
-
 }
