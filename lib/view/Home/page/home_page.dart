@@ -129,7 +129,7 @@ class HomePage extends StatelessWidget {
                                   const BorderRadius.vertical(top: Radius.circular(8)),
                                   child: Image.network(
                                     product.thumbnail,
-                                    fit: BoxFit.cover,
+                                    fit: BoxFit.contain,
                                     errorBuilder: (context, error, stackTrace) =>
                                     const Center(child: Icon(Icons.error)),
                                     loadingBuilder: (context, child, loadingProgress) {
