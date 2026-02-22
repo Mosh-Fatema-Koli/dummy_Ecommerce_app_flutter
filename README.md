@@ -1,16 +1,26 @@
 # dummy_ecomarce
 
-A new Flutter project.
+A Flutter e-commerce demo app featuring product listing, lazy loading, and cart functionality using Cubit for state management.
+
+---
+
+## Features
+
+- Fetch products from API with pagination (lazy loading)
+- Add products to cart (SQLite local storage)
+- Show cart count on AppBar
+- Pull-to-refresh product list
+- Responsive grid layout
+- Bloc/Cubit state management
+
+---
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter SDK ≥ 3.x
+- Dart ≥ 3.x
+- Android Studio or VS Code
+- A device/emulator
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
